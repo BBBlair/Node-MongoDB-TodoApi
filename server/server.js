@@ -9,7 +9,7 @@ const {ObjectID} = require('mongodb');
 var app = express();
 
 // deployment for Heroku
-const port = process.env.PORT || 3000;
+const port =  process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
@@ -37,7 +37,7 @@ app.get('/todos', (req, res) => {
 
 app.get('/todos/:id', (req, res) => {
   var id = req.params.id;
-//  res.send(req.params);
+
   if (!ObjectID.isValid(id)) {
     return res.status(404).send('ID not valid');
   }
@@ -50,6 +50,26 @@ app.get('/todos/:id', (req, res) => {
     res.send({todo});
   }).catch((e) => res.status(404).send(e));
 });
+
+
+app.delete('/todos/:id', (req, res) => {
+    var id = req.params.id;
+
+    if (!ObjectID.isValid(id)) {
+      return res.status(404).send('ID not valid');
+    }
+
+    Todo.findByIdAndRemove(id).then((todo) => {
+      if(!todo) {
+        return res.status(404).send('Item does not exist');
+      }
+
+      res.send(todo);
+
+    }).catch((e) => res.status(400).send(e));
+
+});
+
 
 app.listen(port, () => {
   console.log(`Started on port ${port}`);
