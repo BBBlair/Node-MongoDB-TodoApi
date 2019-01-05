@@ -8,6 +8,9 @@ const {ObjectID} = require('mongodb');
 
 var app = express();
 
+// deployment for Heroku
+const port = process.env.PORT || 3000;
+
 app.use(bodyParser.json());
 
 //set a route
@@ -48,8 +51,8 @@ app.get('/todos/:id', (req, res) => {
   }).catch((e) => res.status(404).send(e));
 });
 
-app.listen(3000, () => {
-  console.log('Started on port 3000');
+app.listen(port, () => {
+  console.log(`Started on port ${port}`);
 });
 
 module.exports = {app};
