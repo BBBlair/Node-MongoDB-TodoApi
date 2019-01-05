@@ -10,7 +10,9 @@ const todos = [{
   text: 'First test todo'
 }, {
   _id: new ObjectID(),
-  text: 'Second test todo'
+  text: 'Second test todo',
+  completed: true,
+  completedAt: 333
 }];
 
 //mocha features
@@ -19,6 +21,7 @@ beforeEach((done) => {
     return Todo.insertMany(todos);
   }).then(() => done());
 });
+
 
 //describe() is a mocha feature:  no need to import
 describe('POST /todos', () => {
@@ -140,6 +143,45 @@ describe('DELETE /todos/:id', () => {
     request(app)
       .delete(`/todos/123ac`)
       .expect(404)
+      .end(done);
+  });
+});
+
+
+describe('PATCH /todos/:id', () => {
+  var update = {
+    text: 'Enjoy life',
+    completed: true
+  };
+
+  var update2 = {
+    text: 'Revise Resume',
+    completed: false
+  };
+
+  it('should update the todo', (done) => {
+    request(app)
+      .patch(`/todos/${todos[0]._id.toHexString()}`)
+      .send(update)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.todo.text).toBe(update.text);
+        expect(res.body.todo.completed).toBe(true);
+        expect(typeof res.body.todo.completedAt).toBe('number');
+      })
+      .end(done);
+  });
+
+  it('should clear completedAt when todo is not completed', (done) => {
+    request(app)
+      .patch(`/todos/${todos[1]._id.toHexString()}`)
+      .send(update2)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.todo.text).toEqual(update2.text);
+        expect(res.body.todo.completed).toBe(false);
+        expect(res.body.todo.completedAt).toBeFalsy();
+      })
       .end(done);
   });
 });
