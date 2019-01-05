@@ -20,8 +20,10 @@ beforeEach((done) => {
   }).then(() => done());
 });
 
-describe('POST /todos', () => {//describe() is a mocha feature:  no need to import
-  it('should creat a new todo', (done) => {    //it is a mocha feature
+//describe() is a mocha feature:  no need to import
+describe('POST /todos', () => {
+  //it is a mocha feature
+  it('should creat a new todo', (done) => {
     var text = 'Test to do text';
 
     request(app)
@@ -100,6 +102,43 @@ describe('GET /todos/:id', () => {
   it('should return 404 for non-object ids', (done) => {
     request(app)
       .get(`/todos/123ac`)
+      .expect(404)
+      .end(done);
+  });
+});
+
+
+describe('DELETE /todos/:id', () => {
+  it('should delete and return todo doc', (done) => {
+    request(app)
+      .delete(`/todos/${todos[1]._id.toHexString()}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.todo._id).toBe(todos[1]._id.toHexString());
+      })
+      .end((err, res) => {
+        if(err){
+          return done(err);
+        }
+
+        Todo.findById(todos[1]._id.toHexString()).then((todo) => {
+          expect(todo).toBeFalsy();
+          done();
+        }).catch((e) => done(e));
+      });
+  });
+
+  it('should return 404 if todo not found', (done) => {
+    var id = new ObjectID().toHexString()
+    request(app)
+      .delete(`/todos/${id}`)
+      .expect(404)
+      .end(done);
+  });
+
+  it('should return 404 for invalid ids', (done) => {
+    request(app)
+      .delete(`/todos/123ac`)
       .expect(404)
       .end(done);
   });
