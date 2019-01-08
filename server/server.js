@@ -8,6 +8,7 @@ const {ObjectID} = require('mongodb');
 var {mongoose} = require('./db/mongoose');
 var {Todo} = require('./models/todo');
 var {User} = require('./models/user');
+var {authenticate} = require('./middleware/authenticate');
 
 // deployment for Heroku
 const port =  process.env.PORT;
@@ -16,7 +17,6 @@ var app = express();
 
 app.use(bodyParser.json());
 
-//set a route
 app.post('/todos', (req, res) => {
 
   var todo = new Todo({
@@ -44,7 +44,6 @@ app.post('/users', (req, res) => {
   }).catch((e) => {
     res.status(400).send(e);
   });
-
 });
 
 app.get('/todos', (req, res) => {
@@ -53,6 +52,10 @@ app.get('/todos', (req, res) => {
   }, (e) => {
     res.status(400).send(e);
   });
+});
+
+app.get('/users/me', authenticate, (req, res) => {
+  res.send(req.user);
 });
 
 app.get('/todos/:id', (req, res) => {
