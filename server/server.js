@@ -64,10 +64,6 @@ app.get('/todos', (req, res) => {
   });
 });
 
-app.get('/users/me', authenticate, (req, res) => {
-  res.send(req.user);
-});
-
 app.get('/todos/:id', (req, res) => {
   var id = req.params.id;
 
@@ -82,6 +78,10 @@ app.get('/todos/:id', (req, res) => {
 //    console.log('Todo By Id', todo);
     res.send({todo});
   }).catch((e) => res.status(404).send(e));
+});
+
+app.get('/users/me', authenticate, (req, res) => {
+  res.send(req.user);
 });
 
 app.delete('/todos/:id', (req, res) => {
@@ -100,6 +100,14 @@ app.delete('/todos/:id', (req, res) => {
 
     }).catch((e) => res.status(400).send(e));
 
+});
+
+app.delete('/users/me/token', authenticate, (req,res) => {
+  req.user.removeToken(req.token).then(() => {
+    res.status(200).send();
+  }, (e) => {
+    res.status(400).send();
+  });
 });
 
 app.patch('/todos/:id', (req, res) => {
