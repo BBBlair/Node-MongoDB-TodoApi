@@ -355,8 +355,6 @@ describe('PATCH /todos/:id', () => {
       .end(done);
   });
 });
-<<<<<<< HEAD
-=======
 
 
 describe('GET /users/me', () => {
@@ -475,4 +473,3 @@ describe('POST /users/login', () => {
       });
   });
 });
->>>>>>> 872f8e6962a31b413e9d4223b7e575c5e28fa5f0
